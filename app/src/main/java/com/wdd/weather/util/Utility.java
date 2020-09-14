@@ -2,9 +2,11 @@ package com.wdd.weather.util;
 
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
 import com.wdd.weather.db.City;
 import com.wdd.weather.db.County;
 import com.wdd.weather.db.Province;
+import com.wdd.weather.gson.Weather;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -91,5 +93,31 @@ public class Utility {
             }
         }
         return false;
+    }
+
+    /*
+    * 将返回的JSON数据解析成Weather实体类
+    * 解析出的数据形式
+    * {
+ *       "status":"ok",
+ *       "basic":{},
+ *       "aqi":{},
+ *       "now":{},
+ *       "suggestion":{},
+ *       "daily_forecast": []
+ *   }
+    * */
+    public static Weather handleWeatherResponse(String response) {
+
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            //由于定义过响应的GON实体类，只需要调用fromJson方法就能直接将 JSON 转化 为 Weather对象
+            return new Gson().fromJson(weatherContent, Weather.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
